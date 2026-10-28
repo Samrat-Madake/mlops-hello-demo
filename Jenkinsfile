@@ -45,6 +45,14 @@ pipeline {
                 bat 'docker build -t mlops-hello .'
             }
         }
+
+        stage('Run Docker Container') {
+            steps {
+                bat 'docker rm -f mlops-hello-container 2>NUL || exit /b 0'
+                bat 'docker run -d --name mlops-hello-container mlops-hello'
+                bat 'docker ps --filter "name=mlops-hello-container"'
+            }
+        }
     }
 
     post {
@@ -57,3 +65,7 @@ pipeline {
         }
     }
 }
+
+
+
+
