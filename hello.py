@@ -1,6 +1,6 @@
 
 def get_message():
-    return "Hello, MLOps!"
+    return "Hello, MLOps! Webhook works!"
 
 
 if __name__ == "__main__":
