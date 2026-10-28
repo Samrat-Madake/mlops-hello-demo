@@ -2,6 +2,11 @@
 pipeline {
     agent any
 
+    environment {
+        PYTHON = 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python311\\python.exe'
+        VENV = '.venv-jenkins'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -9,27 +14,29 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Setup Python Environment') {
             steps {
-                bat 'python -m pip install -r requirements.txt'
+                bat '"%PYTHON%" -m venv "%VENV%"'
+                bat '"%VENV%\\Scripts\\python.exe" -m pip install --upgrade pip'
+                bat '"%VENV%\\Scripts\\python.exe" -m pip install -r requirements.txt'
             }
         }
 
         stage('Run Application') {
             steps {
-                bat 'python hello.py'
+                bat '"%VENV%\\Scripts\\python.exe" hello.py'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'python -m pytest -v'
+                bat '"%VENV%\\Scripts\\python.exe" -m pytest -v'
             }
         }
 
         stage('Evidently Monitoring') {
             steps {
-                bat 'python monitoring.py'
+                bat '"%VENV%\\Scripts\\python.exe" monitoring.py'
             }
         }
 
@@ -44,6 +51,9 @@ pipeline {
         always {
             archiveArtifacts artifacts: 'drift_report.html',
                              allowEmptyArchive: true
+        }
+        success {
+            echo 'MLOps pipeline completed successfully!'
         }
     }
 }
